@@ -488,7 +488,10 @@ run_purely_synchronous_sections() {
 
     # Network device statistics (Packets, Collisions, etc)
     # only the "Link/Num" interface has all counters.
-    echo '<<<netctr>>>'
+    echo '<<<bsd_if>>>'
+    echo "[start_iplink]"
+    ifconfig
+    echo "[end_iplink]"
     get_epoch
     if [ "$(echo "${osver}" | cut -f1 -d\.)" -gt "8" ]; then
         netstat -inb | grep -v -E '(^Name|lo|plip)' | grep Link | awk '{print $1" "$8" "$5" "$6" "$7" 0 0 0 0 "$11" "$9" "$10" 0 0 0 0 0"}'
@@ -496,6 +499,7 @@ run_purely_synchronous_sections() {
         # pad output for freebsd 7 and before
         netstat -inb | grep -v -E '(^Name|lo|plip)' | grep Link | awk '{print $1" "$7" "$5" "$6" 0 0 0 0 0 "$10" "$8" "$9" 0 0 "$11" 0 0"}'
     fi
+    # for BSD we don't need to run ethtool for link status, speed, duplex. it's all in ifconfig. (on FreeBSD at least)
 
     # IPMI-Data (Fans, CPU, temperature, etc)
     # needs the sysutils/ipmitool and kldload ipmi.ko
